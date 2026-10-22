@@ -42,6 +42,6 @@ slugs, same change-detection hash, so after the switch every post reports
 |---|---|---|
 | Tag | hard-coded | `tag` in `blog.toml` |
 | Posts folder | the script's parent folder | `dir` in `blog.toml` (default: the config's folder) |
-| `--schedule` queue | after the last scheduled post **in this series** | after the last scheduled post **on the whole blog** |
+| `--schedule` queue | after the last scheduled post **in this series** | after the last scheduled post **in this series** (matched by tag) |
 | Slugs | file name | file name, with optional `slug_prefix` |
 | Flags | `--apply --pull --schedule --every --at` | same, plus `--config` |

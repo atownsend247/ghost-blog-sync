@@ -44,7 +44,7 @@ Next run it renders the markdown again and compares hashes. Consequences:
 
 ## Scheduling (`blog-sync --schedule --apply`)
 
-1. Ask Ghost for **every scheduled post on the blog** and take the latest date.
+1. Ask Ghost for **every scheduled post carrying this series' tag** and take the latest date.
 2. The first slot is the day after that, or tomorrow if nothing is scheduled,
    whichever is later. Times are London time (`--at`, default 09:00), converted
    to UTC for Ghost, so summer time is handled.
@@ -56,7 +56,8 @@ Next run it renders the markdown again and compares hashes. Consequences:
 Because step 1 reads the existing queue, the command is **safe to re-run** on
 every build: with nothing in draft it changes nothing, and a post added later
 joins the back of the queue instead of jumping ahead of posts already waiting.
-Because the queue is blog-wide, so do other projects' posts.
+Other projects' scheduled posts are not considered: each series keeps its own
+cadence.
 
 Scheduling runs separately from the content sync and must come second in a
 pipeline: a post that isn't on Ghost yet can't be scheduled.

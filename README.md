@@ -19,7 +19,7 @@ my-project/
 | Mode | Command | Effect |
 |---|---|---|
 | Sync content *(default)* | `blog-sync --apply` | Creates posts missing on Ghost as **drafts**; updates changed ones in place; skips unchanged ones. A post's published/draft status is never changed. |
-| Schedule | `blog-sync --schedule --apply` | Schedules this series' posts still in draft, one every other day at 09:00 London time, queued **after the last post already scheduled anywhere on the blog**. |
+| Schedule | `blog-sync --schedule --apply` | Schedules this series' posts still in draft, one every other day at 09:00 London time, queued **after this series' last scheduled post** (other projects on the blog don't affect it). |
 | Pull banners | `blog-sync --pull` | Copies banner images you set in Ghost's editor back into the markdown. Edits local files only. |
 
 Every mode is a **dry run unless `--apply` is passed** (`--pull` always only
@@ -58,14 +58,14 @@ writes them anywhere else.
 
 If the project shares a blog with others, read the
 [sharing a blog](docs/configuration.md#sharing-one-blog-between-projects) notes
-first (slug prefixes, and why scheduling queues across projects).
+first (slug prefixes).
 
 ## Documentation
 
 - [docs/configuration.md](docs/configuration.md) - `blog.toml` settings, and sharing one blog between projects
 - [docs/writing-posts.md](docs/writing-posts.md) - file naming, links between posts, banners, hidden comments
 - [docs/how-it-works.md](docs/how-it-works.md) - change detection, status handling, scheduling rules
-- [docs/jenkins.md](docs/jenkins.md) - the pipeline stage, credentials, locking
+- [docs/jenkins.md](docs/jenkins.md) - the pipeline stage, credentials
 - [docs/migrating-from-ghost-publish.md](docs/migrating-from-ghost-publish.md) - moving a project off the copied `ghost_publish.py`
 - [docs/development.md](docs/development.md) - tests and releasing
 

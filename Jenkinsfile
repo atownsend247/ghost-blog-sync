@@ -9,9 +9,9 @@
 // --apply creates missing posts as drafts and updates changed ones without
 // touching a post's published/draft status; --schedule --apply then queues
 // any posts still sitting as drafts, one every other day at 09:00 London
-// time, after the last post already scheduled anywhere on the blog. So a
-// post merged to main goes live on its own a few days later - to hold one
-// back, don't merge it. --pull rewrites local markdown, which cleanWs()
+// time, after this series' last scheduled post (other projects' posts are
+// ignored, so each project keeps its own cadence). So a post merged to main
+// goes live on its own a few days later - to hold one back, don't merge it. --pull rewrites local markdown, which cleanWs()
 // would discard, so it's left to run by hand.
 //
 // blog-sync runs from this checkout (`uv run`), so the pipeline always tests

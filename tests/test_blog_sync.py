@@ -29,7 +29,9 @@ class FakeGhost:
     def get(self, url, params=None):
         if url.endswith("/posts/"):
             scheduled = [{"published_at": p["published_at"]} for p in self.posts.values() if p["status"] == "scheduled"]
-            scheduled += [{"published_at": d} for d in self.scheduled_elsewhere]
+            # The real API filters by tag; posts "elsewhere" belong to other series.
+            if "tag:" not in (params or {}).get("filter", ""):
+                scheduled += [{"published_at": d} for d in self.scheduled_elsewhere]
             return Resp(200, {"posts": scheduled})
         slug = url.rstrip("/").rsplit("/", 1)[-1]
         if slug not in self.posts:
@@ -133,7 +135,7 @@ def test_banner_round_trip():
 
 def test_scheduling_starts_tomorrow_when_nothing_is_queued():
     ghost = FakeGhost({"a": {"status": "draft"}, "b": {"status": "draft"}})
-    commands.schedule_drafts(ghost, "B", make_posts("a", "b"), 2, "09:00", apply=True)
+    commands.schedule_drafts(ghost, "B", make_posts("a", "b"), 2, "09:00", apply=True, tag_slug="t")
     assert [slug for slug, _ in ghost.puts] == ["a", "b"]
     # Compared as London local times: the gap is two calendar days at 09:00
     # even when the clocks change in between.
@@ -145,24 +147,24 @@ def test_scheduling_starts_tomorrow_when_nothing_is_queued():
 
 def test_new_post_queues_behind_the_series_own_scheduled_posts():
     ghost = FakeGhost({"a": {"status": "scheduled", "published_at": iso(10)}, "b": {"status": "draft"}})
-    commands.schedule_drafts(ghost, "B", make_posts("a", "b"), 2, "09:00", apply=True)
+    commands.schedule_drafts(ghost, "B", make_posts("a", "b"), 2, "09:00", apply=True, tag_slug="t")
     (slug, when), = ghost.puts
     assert slug == "b"
     assert datetime.fromisoformat(when.replace("Z", "+00:00")) > datetime.now(timezone.utc) + timedelta(days=11)
 
 
-def test_new_post_queues_behind_another_projects_scheduled_posts():
-    # Nothing of this series is scheduled, but another series on the same blog
-    # has a post going out in 20 days - this one must not land before it.
+def test_other_projects_scheduled_posts_do_not_push_this_series_back():
+    # Another series on the same blog has a post going out in 20 days. This
+    # series has its own cadence, so its first post still goes out tomorrow.
     ghost = FakeGhost({"a": {"status": "draft"}}, scheduled_elsewhere=[iso(20)])
-    commands.schedule_drafts(ghost, "B", make_posts("a"), 2, "09:00", apply=True)
+    commands.schedule_drafts(ghost, "B", make_posts("a"), 2, "09:00", apply=True, tag_slug="t")
     (_, when), = ghost.puts
-    assert datetime.fromisoformat(when.replace("Z", "+00:00")) > datetime.now(timezone.utc) + timedelta(days=21)
+    assert datetime.fromisoformat(when.replace("Z", "+00:00")) < datetime.now(timezone.utc) + timedelta(days=2)
 
 
 def test_scheduling_skips_posts_that_are_not_drafts_or_not_on_ghost(capsys):
     ghost = FakeGhost({"a": {"status": "published"}})
-    commands.schedule_drafts(ghost, "B", make_posts("a", "missing"), 2, "09:00", apply=True)
+    commands.schedule_drafts(ghost, "B", make_posts("a", "missing"), 2, "09:00", apply=True, tag_slug="t")
     out = capsys.readouterr().out
     assert ghost.puts == []
     assert "[published, skipped]" in out and "[not on Ghost]" in out
@@ -170,7 +172,7 @@ def test_scheduling_skips_posts_that_are_not_drafts_or_not_on_ghost(capsys):
 
 def test_scheduling_is_a_dry_run_without_apply():
     ghost = FakeGhost({"a": {"status": "draft"}})
-    commands.schedule_drafts(ghost, "B", make_posts("a"), 2, "09:00", apply=False)
+    commands.schedule_drafts(ghost, "B", make_posts("a"), 2, "09:00", apply=False, tag_slug="t")
     assert ghost.puts == []
 
 

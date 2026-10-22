@@ -9,7 +9,7 @@ uv run blog-sync --config path/to/blog.toml     # dry run against a project's po
 The tests use a small fake of the Ghost Admin API (`FakeGhost` in
 `tests/test_blog_sync.py`), so they need no credentials or network. They cover
 config parsing, slug prefixes, link rewriting, banner round-trips, and the
-scheduling rules (including queueing behind another project's posts).
+scheduling rules (including ignoring other projects' scheduled posts).
 
 ## Layout
 

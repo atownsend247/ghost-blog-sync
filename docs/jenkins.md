@@ -62,29 +62,6 @@ scope so every project's job can use them:
 
 Both are masked in build logs by `withCredentials`.
 
-## Avoiding two projects scheduling at once
-
-`disableConcurrentBuilds()` stops two builds of the *same* job running together,
-not builds of different projects. If two projects' sync stages run in the same
-moment they can both read the scheduling queue before either writes, and both
-pick the same day.
-
-It's a small race with a small cost (two posts on one day), but if you want it
-gone, share a lock. This needs the Lockable Resources plugin; wrap the stage's
-steps:
-
-```groovy
-steps {
-    lock(resource: 'ghost-blog') {
-        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            // ... as above
-        }
-    }
-}
-```
-
-Use the same resource name in every project.
-
 ## Checking it worked
 
 A first run with nothing to do prints `[unchanged]` for each post and

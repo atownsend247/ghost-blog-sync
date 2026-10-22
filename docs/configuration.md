@@ -43,17 +43,15 @@ Changing a prefix on a series that is already on Ghost makes every post look
 new: it creates a second copy under the new slug and leaves the old one. Choose
 the prefix before the first sync, or rename the old posts' slugs in Ghost.
 
-### Scheduling queues across projects
+### Each project has its own schedule
 
-`--schedule` starts the first post the day after the latest post scheduled
-**anywhere on the blog**, not just in the current series. So two projects
-scheduling in turn line up one after the other instead of both claiming
-tomorrow. Only posts still in draft are scheduled; published and
-already-scheduled posts are never touched.
+`--schedule` queues a series behind the latest post scheduled **with the same
+tag**, so each project keeps its own cadence. Other projects' scheduled posts
+are ignored, which means two projects can publish on the same day. Only posts
+still in draft are scheduled; published and already-scheduled posts are never
+touched.
 
-The queue is read at the start of each run. Two runs at the same moment (two
-projects' pipelines building together) can both read an empty queue and pick the
-same day - see [locking in docs/jenkins.md](jenkins.md#avoiding-two-projects-scheduling-at-once).
+Because the queue is found by tag, don't give two projects the same `tag`.
 
 ### One credential pair for all of them
 

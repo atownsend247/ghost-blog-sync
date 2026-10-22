@@ -150,8 +150,8 @@ Creating drafts is useful. Scheduling them is what turned it from "saves me
 copying" into "I merge a post and forget about it". `blog-sync --schedule
 --apply` works like this:
 
-1. Ask Ghost for every scheduled post **on the whole blog** and take the latest
-   date.
+1. Ask Ghost for every scheduled post **carrying this series' tag** and take the
+   latest date.
 2. The first slot is the day after that, or tomorrow if nothing is queued.
 3. Walk the series in number order. A draft gets the next slot - 09:00 London
    time by default, one post every other day - and the slot advances. Anything
@@ -169,9 +169,11 @@ back to draft in Ghost, the next build sees a draft and schedules it again. To
 hold a post back, the rule is simply: don't merge it. That's a deliberate
 simplification - git is the single place where "this is ready" gets decided.
 
-The blog-wide queue matters because more than one project publishes to the same
-Ghost site. If scheduling only looked at its own series, two projects would both
-claim tomorrow. Reading the whole blog makes them line up one after another.
+More than one project publishes to the same Ghost site, and the queue is found
+by tag, so each project keeps its own cadence. Another project's scheduled posts
+are ignored, which means two series can go out on the same day. I chose that over
+a single shared queue, where one project's backlog of ten drafts would push every
+other project's next post weeks out.
 
 ## The pipeline stage
 
@@ -242,8 +244,9 @@ assumed:
   a series already on Ghost makes every post look new, so it has to be chosen
   before the first sync. That's why finance-system leaves it unset: its posts
   were already live.
-- **The scheduling queue was per series**, and became blog-wide, for the reason
-  above.
+- **The scheduling queue** stays per series, but is now found by tag rather than
+  by the script's own state, so it keeps working when several projects share a
+  blog.
 
 Moving finance-system over was designed to be invisible. The file names, slugs
 and hash are unchanged, so the first run after the switch should report every
@@ -258,11 +261,9 @@ commands, delete the copied script, and update the docs that told me to run
 
 A few honest gaps, because they shape how I use it:
 
-- **There's a small race.** `disableConcurrentBuilds()` stops two builds of the
-  same job overlapping, not builds of different projects. Two projects syncing at
-  the same instant can both read the queue before either writes it, and both pick
-  the same day. The cost is two posts on one day. The fix is a shared lock
-  (the Lockable Resources plugin) around the stage, and I haven't needed it yet.
+- **Projects can collide on a day.** Each series has its own cadence, so two
+  projects can publish on the same morning. That's deliberate, but it means the
+  blog as a whole has no "one post a day" guarantee.
 - **It's one-way, mostly.** Content flows from the repo to Ghost; only banners
   come back, and only when I ask. If I edit a post's body in Ghost's editor,
   the next sync will put the markdown version back - which is the point of

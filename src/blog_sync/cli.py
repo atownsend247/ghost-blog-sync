@@ -19,7 +19,7 @@ def build_parser():
     ap.add_argument("--config", help="path to blog.toml (default: ./blog.toml, then ./blog/blog.toml)")
     ap.add_argument("--apply", action="store_true", help="write to Ghost (default: report only)")
     ap.add_argument("--pull", action="store_true", help="copy banner images from Ghost into the markdown (local edits only)")
-    ap.add_argument("--schedule", action="store_true", help="schedule draft posts, one every --every days, queued after anything already scheduled")
+    ap.add_argument("--schedule", action="store_true", help="schedule draft posts, one every --every days, queued after this series' last scheduled post")
     ap.add_argument("--every", type=int, default=2, help="days between scheduled posts (default 2)")
     ap.add_argument("--at", default="09:00", help="London time of day to publish, HH:MM (default 09:00)")
     return ap
@@ -36,7 +36,7 @@ def main(argv=None):
         return
     if args.schedule:
         session, base = ghost.admin_session()
-        commands.schedule_drafts(session, base, posts, args.every, args.at, args.apply)
+        commands.schedule_drafts(session, base, posts, args.every, args.at, args.apply, config.tag_slug)
         return
 
     session = base = None

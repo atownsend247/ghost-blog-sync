@@ -99,12 +99,13 @@ def pull_banners(session, base, posts):
     print(f"summary: {changed} markdown file(s) updated from Ghost banners")
 
 
-def _last_scheduled_date(session, base):
-    """The London date of the latest post scheduled anywhere on the blog (not
-    just in this series, so projects sharing a blog queue behind each other),
-    or None if nothing is scheduled."""
+def _last_scheduled_date(session, base, tag_slug):
+    """The London date of the latest post of this series (the posts carrying
+    `tag_slug`) that is scheduled, or None if there isn't one. Other projects'
+    scheduled posts are ignored, so each series keeps its own cadence."""
     r = session.get(
-        f"{base}/posts/", params={"filter": "status:scheduled", "fields": "published_at", "limit": "all"}
+        f"{base}/posts/",
+        params={"filter": f"status:scheduled+tag:{tag_slug}", "fields": "published_at", "limit": "all"},
     )
     if r.status_code != 200:
         sys.exit(f"could not list scheduled posts: HTTP {r.status_code}")
@@ -116,14 +117,15 @@ def _last_scheduled_date(session, base):
     return max(dates, default=None)
 
 
-def schedule_drafts(session, base, posts, every, at, apply):
+def schedule_drafts(session, base, posts, every, at, apply, tag_slug):
     """Schedule this series' draft posts in series order, one every `every`
-    days. The first goes out the day after the latest post already scheduled on
-    the blog, or tomorrow if none is - so re-running is safe and a post added
-    later queues up behind the earlier ones."""
+    days. The first goes out `every` days after the latest post of this series
+    already scheduled, or tomorrow if none is - so re-running is safe and a post
+    added later queues up behind the earlier ones. Other series on the blog are
+    not considered: each project runs on its own cadence."""
     hour, minute = (int(x) for x in at.split(":"))
     day = datetime.now(PUBLISH_TZ).date() + timedelta(days=1)
-    last = _last_scheduled_date(session, base)
+    last = _last_scheduled_date(session, base, tag_slug)
     if last is not None:
         day = max(day, last + timedelta(days=every))
 
