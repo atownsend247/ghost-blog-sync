@@ -17,7 +17,7 @@ stage('Sync blog') {
                 // scheduling if the sync fails.
                 sh '''
                     run_blog() {
-                        uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.1.0 blog-sync "$@"
+                        uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.2.0 blog-sync "$@"
                     }
                     run_blog --apply
                     run_blog --schedule --apply
@@ -38,7 +38,7 @@ posts then sit as drafts on Ghost until you publish them by hand.
 - **`catchError(... UNSTABLE)`** - a Ghost outage, a bad key or a typo in a post
   marks the build yellow, not red, and the deploy that already ran is
   unaffected.
-- **`@v0.1.0`** - pin a release tag. A change to blog-sync can then never break
+- **`@v0.2.0`** - pin a release tag. A change to blog-sync can then never break
   a project's build until you bump that project's tag. Avoid `@main`.
 - **No `changeset` condition** - the tool skips unchanged posts, so running it
   every build is cheap, and it also notices edits made in Ghost's editor.

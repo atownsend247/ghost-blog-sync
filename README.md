@@ -35,9 +35,9 @@ your project: run it straight from this repo, pinned to a tag.
 export GHOST_URL=https://blog.example.com
 export GHOST_ADMIN_KEY=<id>:<secret>      # Ghost Admin → Settings → Integrations
 
-uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.1.0 blog-sync                 # list / dry run
-uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.1.0 blog-sync --apply         # sync content
-uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.1.0 blog-sync --schedule --apply
+uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.2.0 blog-sync                 # list / dry run
+uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.2.0 blog-sync --apply         # sync content
+uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.2.0 blog-sync --schedule --apply
 ```
 
 Or from a local checkout while developing: `uv run blog-sync --config path/to/blog.toml`.

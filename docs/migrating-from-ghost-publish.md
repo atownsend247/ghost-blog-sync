@@ -8,7 +8,7 @@ slugs, same change-detection hash, so after the switch every post reports
 `unchanged` and nothing is rewritten.
 
 1. **Publish blog-sync** somewhere Jenkins can fetch it, and tag a release
-   (`git tag v0.1.0 && git push --tags`).
+   (`git tag v0.2.0 && git push --tags`).
 
 2. **Add the config.** The old script hard-coded the tag, so write it down:
    ```toml
@@ -21,7 +21,7 @@ slugs, same change-detection hash, so after the switch every post reports
 3. **Check parity locally** before touching the pipeline:
    ```sh
    export GHOST_URL=... GHOST_ADMIN_KEY=...
-   uvx --from git+<repo>@v0.1.0 blog-sync          # dry run, reads Ghost
+   uvx --from git+<repo>@v0.2.0 blog-sync          # dry run, reads Ghost
    ```
    Every post should print `[unchanged]`. Anything else is a difference to
    understand first.

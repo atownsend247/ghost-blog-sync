@@ -190,7 +190,7 @@ stage('Sync blog') {
             ]) {
                 sh '''
                     run_blog() {
-                        uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.1.0 blog-sync "$@"
+                        uvx --from git+https://github.com/atownsend247/ghost-blog-sync.git@v0.2.0 blog-sync "$@"
                     }
                     run_blog --apply
                     run_blog --schedule --apply
@@ -210,7 +210,7 @@ Every line of that is one of the four requirements:
 - `run_blog --apply` before `run_blog --schedule --apply` - order matters, since
   scheduling skips posts that aren't on Ghost yet, and Jenkins' default `sh -e`
   stops before the second command if the first fails.
-- `@v0.1.0` - the tool is pinned to a release tag, so a change to blog-sync can
+- `@v0.2.0` - the tool is pinned to a release tag, so a change to blog-sync can
   never break a project's build until I bump that project's tag. I'd avoid
   `@main` here.
 - No `changeset` condition - because unchanged posts are skipped, running it every
