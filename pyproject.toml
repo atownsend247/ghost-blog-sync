@@ -1,0 +1,23 @@
+[project]
+name = "blog-sync"
+version = "0.1.0"
+description = "Keep a folder of markdown posts in sync with a Ghost blog via the Admin API."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["markdown", "pyjwt", "requests"]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[project.scripts]
+blog-sync = "blog_sync.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/blog_sync"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
